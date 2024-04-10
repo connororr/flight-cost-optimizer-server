@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "target": "es2017",
+      "module": "ESNext",
+      "moduleResolution": "node",
+      "outDir": "./dist",
+      "noEmit": true,
+      "allowImportingTsExtensions": true,
+      "esModuleInterop": true,
+      "rootDir": "./src",
+      "strict": true
+    }
+  }
