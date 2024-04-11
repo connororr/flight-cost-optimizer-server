@@ -4,9 +4,11 @@ import { Server } from 'tls';
 import cors from '@fastify/cors';
 
 // TODO: remove logging for prod
+const fastifyPort = process.env.PORT || '3001';
 const server: FastifyInstance = Fastify({
   logger: true
 })
+
 
 server.addContentTypeParser('application/json', {}, (req, body, done) => {
   done(null, body);
@@ -36,7 +38,7 @@ server.register(routes)
 
 const start = async () => {
   try {
-    await server.listen({ port: 3001 })
+    await server.listen({ port: Number(fastifyPort) })
   } catch (err) {
     server.log.error(err)
     process.exit(1)
