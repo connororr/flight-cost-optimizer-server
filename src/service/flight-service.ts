@@ -2,12 +2,13 @@ import { Endpoints } from "../constants/endpoints";
 import { FlightOfferRequestBody, OriginDestination, Traveler } from "../constants/external-api/request";
 import { FlightResponseBody } from "../constants/external-api/response";
 import { Flight } from "../constants/frontend/request/flight";
-import {Itineraries } from "../constants/frontend/response/itinerary";
 import { AmadeusService, IAmadeusService } from "./amadeus-service";
 import { extractFlightInformation } from "./extract-flight-information.ts";
+import { City, Itineraries } from "../constants/frontend/response";
 
 export interface IFlightService {
     getFlightPrices(options: Array<Flight>): Promise<Itineraries>;
+    getIataCodes(searchTerm: string): Promise<Array<City>>
 }
 
 export class FlightService implements IFlightService {
@@ -44,10 +45,27 @@ export class FlightService implements IFlightService {
             }
         }
 
-        const response: any = await this.amadeusService.request(Endpoints.FlightPrice, body, 'POST');
+        const response: any = await this.amadeusService.post(Endpoints.FlightPrice, body);
         const responseJson = await response.json() as FlightResponseBody;
         return extractFlightInformation(responseJson);
     }
 
+    public async getIataCodes(searchTerm: string): Promise<Array<City>> {
+        const searchParams = new URLSearchParams();
+        searchParams.append('subType', 'AIRPORT');
+        searchParams.append('keyword', searchTerm);
+        searchParams.append('page[limit]', '5');
+        searchParams.append('page[offset]', '0');
+        searchParams.append('sort', 'analytics.travelers.score');
+        searchParams.append('view', 'LIGHT');
+
+        const response: any = await this.amadeusService.get(Endpoints.Locations, searchParams);
+        const responseJson = await response.json() as IataCodeResponseBody;
+        return this.extractCityInformation(responseJson);
+    }
+
+    private extractCityInformation(iataCodeResponseBody: IataCodeResponseBody): Array<City> {
+
+    }
 
 }

@@ -1,5 +1,7 @@
 import { FastifyInstance } from "fastify"
 import { FlightService, IFlightService } from "./service/flight-service";
+import { Itineraries } from "./constants/frontend/response";
+import { Flight } from "./constants/frontend/request/flight.ts";
 
 // TODO: fix types
 /**
@@ -12,8 +14,12 @@ const flightService: IFlightService = new FlightService();
 
 async function routes (fastify: FastifyInstance) {
     fastify.post('/api/flights', async (req: any, res: any) => {
+        const flightPrices = req.body as Array<Flight>;
+        return await flightService.getFlightPrices(flightPrices);
+    });
+    fastify.get('/api/codes', async (req: any, res: any) => {
         const body = JSON.parse(req.body);
-        return await flightService.getFlightPrices(body);
+        return await flightService.getIataCodes(body);
     });
 }
   

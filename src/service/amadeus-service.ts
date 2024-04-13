@@ -4,7 +4,8 @@ import 'dotenv/config'
 
 
 export interface IAmadeusService {
-    request(url: string, body: unknown, method: 'POST' | 'GET'): Promise<unknown>;
+    post(endpoint: string, body: unknown): Promise<unknown>;
+    get(endpoint: string, searchParams: URLSearchParams): Promise<unknown>;
 }
 
 type HTTPMethod = 'POST' | 'GET'
@@ -15,7 +16,8 @@ export class AmadeusService implements IAmadeusService {
 
 
     constructor(private _accessTokenTimestamp: number = 0) {}
-    public async request(endpoint: string, body: unknown, method: HTTPMethod = 'GET'): Promise<unknown> {
+    public async post(endpoint: string, body: unknown): Promise<unknown> {
+        const method = 'POST';
         const elapsedTime = (Date.now() - this._accessTokenTimestamp) / (1000 * 60);
         if (elapsedTime > 20) {
             this._accessToken = await this.getAccessToken();
@@ -28,6 +30,23 @@ export class AmadeusService implements IAmadeusService {
             body: JSON.stringify(body)
         }
         return fetch(`${this._amadeusBaseUrl}${endpoint}`, requestOptions)
+    }
+
+    public async get(endpoint: string, searchParams?: URLSearchParams): Promise<unknown> {
+        const method = 'GET';
+        const elapsedTime = (Date.now() - this._accessTokenTimestamp) / (1000 * 60);
+        if (elapsedTime > 20) {
+            this._accessToken = await this.getAccessToken();
+        }
+
+        // TODO: figure out the right type
+        const requestOptions = {
+            method,
+            headers: this.generateDefaultHeaders(method),
+        }
+        const baseUrl = `${this._amadeusBaseUrl}${endpoint}`;
+        const url = searchParams ? `${baseUrl}?${searchParams}` : baseUrl;
+        return fetch(url, requestOptions)
     }
 
     private generateDefaultHeaders(method: HTTPMethod): HeadersInit {

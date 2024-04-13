@@ -20,21 +20,21 @@ await server.register(cors, {
 server.register(routes)
 
 // TODO: remove cors stuff when going to prod
-// server.addHook('preHandler', (req, res, done) => {
-//
-//   const allowedPaths = ["/api/flights", '*'];
-//   if (allowedPaths.includes(req.routeOptions.url)) {
-//     res.header('Access-Control-Allow-Origin', '*');
-//     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-//     res.header("Access-Control-Allow-Headers",  "*");
-//   }
-//
-//   const isPreflight = /options/i.test(req.method);
-//   if (isPreflight) {
-//     return res.send();
-//   }
-//   done();
-// })
+server.addHook('preHandler', (req, res, done) => {
+
+  const allowedPaths = ["/api/flights", '*'];
+  if (allowedPaths.includes(req.routeOptions.url)) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header("Access-Control-Allow-Headers",  "*");
+  }
+
+  const isPreflight = /options/i.test(req.method);
+  if (isPreflight) {
+    return res.send();
+  }
+  done();
+})
 
 const start = async () => {
   try {

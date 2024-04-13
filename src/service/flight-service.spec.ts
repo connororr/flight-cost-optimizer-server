@@ -43,7 +43,10 @@ describe('FlightService', () => {
            }
        }));
       mockAmadeusService = {
-          request: jest.fn().mockResolvedValue({
+          post: jest.fn().mockResolvedValue({
+              json: jest.fn().mockResolvedValue(mockResponseBody)
+          }),
+          get: jest.fn().mockResolvedValue({
               json: jest.fn().mockResolvedValue(mockResponseBody)
           }),
       };
@@ -62,7 +65,7 @@ describe('FlightService', () => {
             }
         }
       await flightService.getFlightPrices(flights);
-      expect(mockAmadeusService.request).toHaveBeenCalledWith(Endpoints.FlightPrice, mockBody, 'POST')
+      expect(mockAmadeusService.post).toHaveBeenCalledWith(Endpoints.FlightPrice, mockBody)
     });
 
        it('should extractFlightInformation from amadeus', async () => {

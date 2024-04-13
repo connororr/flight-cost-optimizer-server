@@ -21,6 +21,10 @@ describe('AmadeusService', () => {
             client_id: mockClientId,
             client_secret: mockClientSecret
         });
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     })
 
     it('should grab an access token if it doesn\'t exist', async () => {
@@ -39,7 +43,7 @@ describe('AmadeusService', () => {
             body: new URLSearchParams(tokenRequest).toString(),
         };
 
-        await testInstance.request(mockEndpoint, mockBody, mockHttpMethod);
+        await testInstance.post(mockEndpoint, mockBody);
 
         expect(fetch).toHaveBeenCalledWith('https://test.api.amadeus.com/v1/security/oauth2/token', mockRequestOptions);
     });
@@ -61,31 +65,13 @@ describe('AmadeusService', () => {
             body: new URLSearchParams(tokenRequest).toString(),
         };
 
-        testInstance.request(mockEndpoint, mockBody, mockHttpMethod);
+        testInstance.post(mockEndpoint, mockBody);
 
         expect(fetch).toHaveBeenCalledWith('https://test.api.amadeus.com/v1/security/oauth2/token', mockRequestOptions);
     })
 
-    it('should make a request to amadeus with the correct body, endpoint and headers', async () => {
-        const testInstance = createTestInstance();
-        const mockGetMethod = 'GET';
-        let headers: HeadersInit = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${mockAccessToken}`,
-        };
-
-        const mockRequestOptions = {
-            method: mockGetMethod,
-            headers: headers,
-            body: JSON.stringify(mockBody)
-        }
-
-        await testInstance.request(mockEndpoint, mockBody, mockGetMethod);
-        expect(fetch).toHaveBeenNthCalledWith(2, `https://test.api.amadeus.com${mockEndpoint}`, mockRequestOptions);
-    });
-
-    describe('when the request is a POST request', () => {
-        it('should add a X-HTTP-Method-Override header', async () => {
+    describe('post()', () => {
+        it('should make a request to amadeus with the correct endpoint, body and headers', async () => {
             const testInstance = createTestInstance();
 
             let headers: HeadersInit = {
@@ -94,12 +80,33 @@ describe('AmadeusService', () => {
                 'X-HTTP-Method-Override': 'POST',
             };
 
-            await testInstance.request(mockEndpoint, mockBody, mockHttpMethod);
+            await testInstance.post(mockEndpoint, mockBody);
             const postRequestBody = (global.fetch as jest.Mock).mock.calls[1][1];
             expect(postRequestBody).toStrictEqual(expect.objectContaining({ headers }))
-        })
-
+        });
     });
+
+    describe('get()', () => {
+        it('should make a request to amadeus with the correct endpoint, params and headers', async () => {
+            const testInstance = createTestInstance();
+            const mockGetMethod = 'GET';
+            let headers: HeadersInit = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${mockAccessToken}`,
+            };
+
+            const mockRequestOptions = {
+                method: mockGetMethod,
+                headers: headers,
+            }
+            const mockUrlSearchParams = new URLSearchParams({
+                mockVal: 'mockVal'
+            });
+
+            await testInstance.get(mockEndpoint, mockUrlSearchParams);
+            expect(fetch).toHaveBeenNthCalledWith(2, `https://test.api.amadeus.com${mockEndpoint}?${mockUrlSearchParams}`, mockRequestOptions);
+        });
+    })
 
     function createTestInstance(accessTokenTimestamp?: number) {
         return new AmadeusService(accessTokenTimestamp);
