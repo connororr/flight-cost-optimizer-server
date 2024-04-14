@@ -8,6 +8,10 @@
       "allowImportingTsExtensions": true,
       "esModuleInterop": true,
       "rootDir": "./src",
-      "strict": true
+      "strict": true,
+      "include": [
+        "./src/**/*.ts"
+      ]
     }
   }
+

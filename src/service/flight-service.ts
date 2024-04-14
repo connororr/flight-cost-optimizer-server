@@ -15,8 +15,7 @@ export class FlightService implements IFlightService {
     private amadeusService: IAmadeusService;
 
     constructor() {
-        const accessTokenTimestamp = Date.now();
-        this.amadeusService = new AmadeusService(accessTokenTimestamp);
+        this.amadeusService = new AmadeusService();
     }
 
     // TODO: notice there's a hardcoded value that you need to write a unit test for
@@ -65,7 +64,13 @@ export class FlightService implements IFlightService {
     }
 
     private extractCityInformation(iataCodeResponseBody: IataCodeResponseBody): Array<City> {
-
+        return iataCodeResponseBody.data.map((data: LocationData) => {
+            const city: City = {
+                iataCode: data.iataCode,
+                name: data.address.cityName
+            }
+            return city;
+        });
     }
 
 }

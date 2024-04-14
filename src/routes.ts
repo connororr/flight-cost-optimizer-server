@@ -14,12 +14,11 @@ const flightService: IFlightService = new FlightService();
 
 async function routes (fastify: FastifyInstance) {
     fastify.post('/api/flights', async (req: any, res: any) => {
-        const flightPrices = req.body as Array<Flight>;
-        return await flightService.getFlightPrices(flightPrices);
+        const body = JSON.parse(req.body);
+        return await flightService.getFlightPrices(body);
     });
     fastify.get('/api/codes', async (req: any, res: any) => {
-        const body = JSON.parse(req.body);
-        return await flightService.getIataCodes(body);
+        return await flightService.getIataCodes(req.query.search);
     });
 }
   

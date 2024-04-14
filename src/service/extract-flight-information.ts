@@ -1,5 +1,5 @@
 import {Data, FlightResponseBody} from "../constants/external-api/response";
-import {Arrival, Departure, FlightLeg, Itineraries, Segment} from "../constants/frontend/response/itinerary.ts";
+import {Arrival, Departure, FlightLeg, Itineraries, Segment} from "../constants/frontend/response";
 
 export function extractFlightInformation(responseBody: FlightResponseBody): Itineraries {
     const itineraries: Itineraries = responseBody.data.map((data: Data) => {
