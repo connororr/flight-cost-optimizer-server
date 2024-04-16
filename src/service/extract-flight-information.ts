@@ -1,10 +1,17 @@
-import {Data, FlightResponseBody} from "../constants/external-api/response";
-import {Arrival, Departure, FlightLeg, Itineraries, Segment} from "../constants/frontend/response";
+import { Data, FlightResponseBody } from "../constants/external-api/response";
+import { Arrival, Departure, FlightLeg, Itineraries, Segment } from "../constants/frontend/response";
 
 export function extractFlightInformation(responseBody: FlightResponseBody): Itineraries {
-    const itineraries: Itineraries = responseBody.data.map((data: Data) => {
+    if (!responseBody.data || responseBody?.data.length === 0) {
+        return [];
+    }
+
+    return responseBody.data.map((data: Data) => {
+        let totalDurationInMins: number = 0;
 
         const flightLegs: Array<FlightLeg> = data.itineraries.map((itinerary) => {
+            totalDurationInMins += _toMinutes(itinerary.duration);
+
             const segments: Array<Segment> = itinerary.segments.map((segment) => {
 
                 return {
@@ -14,7 +21,6 @@ export function extractFlightInformation(responseBody: FlightResponseBody): Itin
                     duration: segment.duration
                 }
             });
-
             return {
                 duration: _formatDuration(itinerary.duration),
                 from: itinerary.segments.at(0)!.departure.iataCode,
@@ -27,12 +33,11 @@ export function extractFlightInformation(responseBody: FlightResponseBody): Itin
         });
         // TODO: remove hardcoded price prefix when you add options for different currencies
         return {
+            totalDurationInMins,
             cost: `$${data.price.grandTotal}`,
             flightLegs
         }
     });
-
-    return itineraries;
 }
 
 function _checkDaysHavePassed(firstDate: string, secondDate: string): number {
@@ -71,4 +76,11 @@ function _formatDuration(duration: string): string {
         .slice(2)
         .toLowerCase()
         .replace('h', 'h ');
+}
+
+function _toMinutes(duration: string): number {
+    let formattedDurationArray = duration.slice(2).split('H');
+    const hours: number = Number(formattedDurationArray[0]);
+    const minutes: number = Number(formattedDurationArray[1].split('M')[0]);
+    return (hours * 60) + minutes;
 }
