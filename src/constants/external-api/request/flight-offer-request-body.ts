@@ -1,5 +1,5 @@
 export interface FlightOfferRequestBody {
-  
+  currencyCode: string,
   originDestinations: OriginDestination[];
   travelers: Traveler[];
   sources: string[];

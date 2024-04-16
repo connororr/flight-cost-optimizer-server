@@ -2,6 +2,7 @@ export type Itineraries = Array<Itinerary>
 
 export interface Itinerary {
     cost: string;
+    totalDurationInMins: number;
     flightLegs: Array<FlightLeg>;
 }
 
