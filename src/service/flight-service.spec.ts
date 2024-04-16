@@ -7,12 +7,14 @@ import { extractFlightInformation } from "./extract-flight-information.ts";
 import { FlightResponseBody } from "../constants/external-api/response";
 import { getFilteredFlightPermutations } from "../lib";
 import { sleep } from "../lib/sleep.ts";
+import { extractCityInformation } from "./extract-city-information.ts";
 
 
 jest.mock('./amadeus-service.ts');
 jest.mock('./extract-flight-information.ts');
 jest.mock('../lib/get-filtered-flight-permutations.ts');
 jest.mock('../lib/sleep.ts');
+jest.mock('./extract-city-information.ts');
 
 describe('FlightService', () => {
     const travelers: Array<Traveler> = [{ id: '1', travelerType: 'ADULT' }];
@@ -49,7 +51,8 @@ describe('FlightService', () => {
       (AmadeusService as jest.Mock).mockReturnValue(mockAmadeusService);
       (getFilteredFlightPermutations as jest.Mock).mockReturnValue(flightPermutations);
       (extractFlightInformation as jest.Mock).mockReturnValue([{}]);
-       (sleep as jest.Mock).mockResolvedValue('');
+      (extractCityInformation as jest.Mock).mockReturnValue([{ name: 'Paris', iataCode: 'CDG'}]);
+      (sleep as jest.Mock).mockResolvedValue('');
    })
 
    describe('getFlightPrices()', () => {
@@ -104,12 +107,36 @@ describe('FlightService', () => {
    })
 
     describe('getIataCodes()', () => {
-        it('should make a request to amadeus', () => {
 
+        afterEach(() => {
+            jest.resetAllMocks();
         })
-        it('should extract city information', () => {
 
-        })
+        it('should make a request to amadeus', async () => {
+            const flightService = new FlightService();
+            const mockSearchTerm = 'mockSearchTerm';
+            const expectedSearchParams = new URLSearchParams();
+            expectedSearchParams.append('subType', 'AIRPORT');
+            expectedSearchParams.append('keyword', mockSearchTerm);
+            expectedSearchParams.append('page[limit]', '5');
+            expectedSearchParams.append('page[offset]', '0');
+            expectedSearchParams.append('sort', 'analytics.travelers.score');
+            expectedSearchParams.append('view', 'LIGHT');
+
+
+            await flightService.getIataCodes(mockSearchTerm);
+
+            expect(mockAmadeusService.get).toHaveBeenCalledWith(Endpoints.Locations, expectedSearchParams);
+        });
+
+        it('should extract city information', async () => {
+            const flightService = new FlightService();
+            const mockSearchTerm = 'mockSearchTerm';
+
+            await flightService.getIataCodes(mockSearchTerm);
+
+            expect(extractCityInformation).toHaveBeenCalledWith(mockResponseBody);
+        });
     })
 
     function toOriginDestination(flight: Flight): OriginDestination {
