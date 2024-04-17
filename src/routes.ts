@@ -15,6 +15,9 @@ const flightService: IFlightService = new FlightService();
 async function routes (fastify: FastifyInstance) {
     fastify.post('/api/flights', async (req: any, res: any) => {
         const body = JSON.parse(req.body);
+        res.headers({
+            "Access-Control-Allow-Origin": "https://exploria-test.xyz"
+        })
         return await flightService.getFlightPrices(body);
     });
     fastify.get('/api/codes', async (req: any, res: any) => {
