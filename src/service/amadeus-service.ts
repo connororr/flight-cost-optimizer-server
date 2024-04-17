@@ -12,7 +12,7 @@ type HTTPMethod = 'POST' | 'GET'
 
 export class AmadeusService implements IAmadeusService {
     private _accessToken: string = '';
-    private _amadeusBaseUrl: string = 'https://test.api.amadeus.com';
+    private _amadeusBaseUrl: string = 'https://api.amadeus.com';
 
 
     constructor(private _accessTokenTimestamp: number = 0) {}
