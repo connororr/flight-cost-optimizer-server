@@ -15,13 +15,16 @@ const flightService: IFlightService = new FlightService();
 async function routes (fastify: FastifyInstance) {
     fastify.post('/api/flights', async (req: any, res: any) => {
         const body = JSON.parse(req.body);
-        res.headers({
-            "Access-Control-Allow-Origin": "https://exploria-test.xyz"
-        })
-        return await flightService.getFlightPrices(body);
+        const itineraries = await flightService.getFlightPrices(body);
+
+        res.header('Access-Control-Allow-Origin', 'https://exploria-test.xyz');
+        res.send(itineraries);
     });
     fastify.get('/api/codes', async (req: any, res: any) => {
-        return await flightService.getIataCodes(req.query.search);
+        const cities = await flightService.getIataCodes(req.query.search);
+
+        res.header('Access-Control-Allow-Origin', 'https://exploria-test.xyz');
+        res.send(cities);
     });
 }
   
