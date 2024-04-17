@@ -32,6 +32,7 @@ server.addHook('preHandler', (req, res, done) => {
   const isPreflight = /options/i.test(req.method);
   if (isPreflight) {
     res.header('Access-Control-Allow-Origin', 'https://exploria-test.xyz');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
     return res.send();
   }
   done();

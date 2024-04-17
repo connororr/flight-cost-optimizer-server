@@ -18,12 +18,14 @@ async function routes (fastify: FastifyInstance) {
         const itineraries = await flightService.getFlightPrices(body);
 
         res.header('Access-Control-Allow-Origin', 'https://exploria-test.xyz');
+        res.header('Access-Control-Allow-Headers', 'Content-Type');
         res.send(itineraries);
     });
     fastify.get('/api/codes', async (req: any, res: any) => {
         const cities = await flightService.getIataCodes(req.query.search);
 
         res.header('Access-Control-Allow-Origin', 'https://exploria-test.xyz');
+        res.header('Access-Control-Allow-Headers', 'Content-Type');
         res.send(cities);
     });
 }
