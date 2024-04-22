@@ -1,7 +1,7 @@
-# Flight-cost-optimizer
+# Flight-cost-optimizer API
 
 This project is a Fastify server that connects to the Amadeus API to return flight information for the
-Exploria SPA (<insert github link here>). 
+Exploria SPA.
 
 Any changes merged to main will be automatically deployed to exploria-api.xyz
 
