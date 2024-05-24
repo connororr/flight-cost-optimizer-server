@@ -7,8 +7,6 @@ import { extractFlightInformation } from "./extract-flight-information.ts";
 import { FlightResponseBody } from "../constants/external-api/response";
 import { getFilteredFlightPermutations } from "../lib";
 import { sleep } from "../lib/sleep.ts";
-import { extractCityInformation } from "./extract-city-information.ts";
-
 
 jest.mock('./amadeus-service.ts');
 jest.mock('./extract-flight-information.ts');
@@ -105,39 +103,6 @@ describe('FlightService', () => {
         // });
     });
    })
-
-    describe('getIataCodes()', () => {
-
-        afterEach(() => {
-            jest.resetAllMocks();
-        })
-
-        it('should make a request to amadeus', async () => {
-            const flightService = new FlightService();
-            const mockSearchTerm = 'mockSearchTerm';
-            const expectedSearchParams = new URLSearchParams();
-            expectedSearchParams.append('subType', 'AIRPORT');
-            expectedSearchParams.append('keyword', mockSearchTerm);
-            expectedSearchParams.append('page[limit]', '5');
-            expectedSearchParams.append('page[offset]', '0');
-            expectedSearchParams.append('sort', 'analytics.travelers.score');
-            expectedSearchParams.append('view', 'LIGHT');
-
-
-            await flightService.getIataCodes(mockSearchTerm);
-
-            expect(mockAmadeusService.get).toHaveBeenCalledWith(Endpoints.Locations, expectedSearchParams);
-        });
-
-        it('should extract city information', async () => {
-            const flightService = new FlightService();
-            const mockSearchTerm = 'mockSearchTerm';
-
-            await flightService.getIataCodes(mockSearchTerm);
-
-            expect(extractCityInformation).toHaveBeenCalledWith(mockResponseBody);
-        });
-    })
 
     function toOriginDestination(flight: Flight): OriginDestination {
        return {
